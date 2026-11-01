@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 from jurialmunkey.ftools import cached_property
 from tmdbhelper.lib.sync.datasync import (
+    SyncDataGetter,
     SyncDataGetterAllMoviesToWatch,
     SyncDataGetterAllShowsToWatch,
 )
@@ -17,14 +18,9 @@ class TraktSyncDataGetterAllUnHiddenShowsToWatch(SyncDataGetterAllShowsToWatch):
     filter_keys = ('dropped_hidden_at', 'progress_watched_hidden_at', )
 
 
-class TraktSyncDataGetterAllUnHiddenShowsInProgress:
+class TraktSyncDataGetterAllUnHiddenShowsInProgress(SyncDataGetter):
     calendar_startdate = -14
     calendar_days = 15
-    additional_keys = ()
-
-    def __init__(self, instance_syncdata, provider):
-        self.instance_syncdata = instance_syncdata
-        self.provider = provider
 
     @property
     def get_episode_watchedcount(self):
@@ -123,10 +119,6 @@ class TraktSyncDataGetterAllUnHiddenShowsInProgress:
     def get_keys(self):
         return self.parent_getter.keys
 
-    @cached_property
-    def sync_succeeded(self):
-        return self.get_sync_succeeded()
-
     def get_sync_succeeded(self):
         if not self.parent_getter.sync_succeeded:
             return False
@@ -145,10 +137,6 @@ class TraktSyncDataGetterAllUnHiddenShowsInProgress:
         return (
             'aired_episodes', 'watched_episodes', 'dropped_hidden_at', 'progress_watched_hidden_at',
             'last_watched_at', *(self.additional_keys or ()))
-
-    @cached_property
-    def items(self):
-        return self.get_items()
 
     def get_items(self):
         sd = self.parent_getter

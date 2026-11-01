@@ -20,7 +20,7 @@ from tmdbhelper_sync_trakt.imdb_top250 import (
 
 
 class Provider(SyncProvider):
-    interface_version = 3
+    interface_version = 4
     provider_id = 'trakt'
     display_name = 'Trakt'
     sync_classes = {
