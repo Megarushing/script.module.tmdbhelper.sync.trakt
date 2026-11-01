@@ -8,7 +8,6 @@ class TraktDataType(DataType):
     def trakt_api(self):
         return self.provider.api
 
-
     @property
     def sync_args(self):
         return ('sync', self.method, f'{self.item_type}s',)
@@ -23,40 +22,38 @@ class TraktDataType(DataType):
         data = self.trakt_api.get_api_request(path, headers=self.trakt_api.headers)
         return data
 
+    @staticmethod
+    def get_response_json(response):
+        if response is None or response.status_code != 200:
+            return
+        try:
+            return response.json()
+        except ValueError:
+            return
+
     def get_response_sync(self, *args, **kwargs):
         response = self.get_response_sync_data(*args, **kwargs)
-
-        # Check we actually get a response
-        if response is None:
-            return
-        try:
-            this_data = response.json()
-        except (ValueError, AttributeError):
+        this_data = self.get_response_json(response)
+        if this_data is None:
             return
 
-        # Dumb hack to deal with weird Trakt decision to paginate sync endpoints without
-        # Unclear why trakt would do this when unable to determine how deep to go from last activity
-        # TODO: future method could check if sorting by activity then check item stamps to test depth?
         try:
-            page_count = int(response.headers['x-pagination-page-count']) + 1
-            page_start = int(response.headers['x-pagination-page']) + 1
-        except (KeyError, ValueError):
-            page_count = 0
-            page_start = 0
+            page_count = int(response.headers.get('x-pagination-page-count', 1)) + 1
+            page_start = int(response.headers.get('x-pagination-page', 1)) + 1
+        except ValueError:
+            return
 
         def get_next_item(x):
-            # TODO: Might need some better validation here to check for timeouts autherror etc.
-            try:
-                return self.get_response_sync_data(*args, **kwargs, page=x).json()
-            except (TypeError, ValueError, AttributeError):
-                return
+            data = self.get_response_json(self.get_response_sync_data(*args, **kwargs, page=x))
+            return data if isinstance(data, list) else None
 
         with ParallelThread(range(page_start, page_count), get_next_item) as pt:
             next_data = pt.queue
 
+        # Cached columns can only be replaced with a complete snapshot.
+        if any(i is None for i in next_data):
+            return
         for i in next_data:
-            if i is None:
-                continue
             this_data.extend(i)
 
         return this_data

@@ -123,9 +123,28 @@ class TraktSyncDataGetterAllUnHiddenShowsInProgress:
     def get_keys(self):
         return self.parent_getter.keys
 
+    @cached_property
+    def sync_succeeded(self):
+        return self.get_sync_succeeded()
+
+    def get_sync_succeeded(self):
+        if not self.parent_getter.sync_succeeded:
+            return False
+        return self.get_calendar_sync_succeeded()
+
+    def get_calendar_sync_succeeded(self):
+        from tmdbhelper.lib.addon.plugin import get_setting
+        if not get_setting('nextepisodes_usecalendar'):
+            return True
+        if not any(item['aired_episodes'] <= item['watched_episodes'] for item in self.parent_getter.items):
+            return True
+        return self.calendar_data is not None
+
     @property
     def parent_additional_keys(self):
-        return ('aired_episodes', 'watched_episodes', 'dropped_hidden_at', 'last_watched_at', *(self.additional_keys or ()))
+        return (
+            'aired_episodes', 'watched_episodes', 'dropped_hidden_at', 'progress_watched_hidden_at',
+            'last_watched_at', *(self.additional_keys or ()))
 
     @cached_property
     def items(self):

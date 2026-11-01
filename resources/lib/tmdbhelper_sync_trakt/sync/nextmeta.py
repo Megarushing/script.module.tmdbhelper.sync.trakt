@@ -40,7 +40,7 @@ class TraktSyncNextEpisodeItem(SyncNextEpisodeItem):
         return self.get_response_sync(
             f'shows/{self.trakt_slug}/progress/watched',
             extended='full',
-        ) or {}
+        )
 
 
 class TraktSyncAllNextEpisodesMetaItem(SyncAllNextEpisodesMetaItem):
