@@ -48,7 +48,7 @@ class ListDiscoverProperties(ListProperties):
 
 class ListDiscoverDir(ListDefault):
     list_properties_class = ListDiscoverProperties
-    kodi_db = None
+    kodi_details = False
 
     def configure_list_properties(self, list_properties):
         list_properties = super().configure_list_properties(list_properties)

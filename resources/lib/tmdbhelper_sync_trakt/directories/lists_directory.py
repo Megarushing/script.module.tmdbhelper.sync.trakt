@@ -87,7 +87,7 @@ class TraktCalendarDirectoryProperties(TraktDirectoryProperties):
 
 class ListTraktDirectory(ListDefault):
     list_properties_class = TraktDirectoryProperties
-    kodi_db = None
+    kodi_details = False
 
     def configure_list_properties(self, list_properties):
         list_properties = super().configure_list_properties(list_properties)
