@@ -43,9 +43,7 @@ class TraktSyncDataGetterAllUnHiddenShowsInProgress(SyncDataGetter):
 
     def get_calendar_episodes(self):
         from tmdbhelper.lib.addon.tmdate import date_in_range
-        from tmdbhelper.lib.addon.plugin import get_setting
-
-        if not get_setting('nextepisodes_usecalendar'):
+        if not self.provider.settings.use_calendar:
             return
 
         if not self.calendar_data:
@@ -117,8 +115,7 @@ class TraktSyncDataGetterAllUnHiddenShowsInProgress(SyncDataGetter):
         return self.get_calendar_sync_succeeded()
 
     def get_calendar_sync_succeeded(self):
-        from tmdbhelper.lib.addon.plugin import get_setting
-        if not get_setting('nextepisodes_usecalendar'):
+        if not self.provider.settings.use_calendar:
             return True
         if not any(item['aired_episodes'] <= item['watched_episodes'] for item in self.parent_getter.items):
             return True

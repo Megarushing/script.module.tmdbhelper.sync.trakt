@@ -1,5 +1,5 @@
 from jurialmunkey.parser import boolean
-from tmdbhelper.lib.addon.plugin import get_setting
+from tmdbhelper_sync_trakt.settings import TraktSettings
 from jurialmunkey.ftools import cached_property
 from tmdbhelper_sync_trakt.directories.lists_trakt import (
     ListTraktStandard,
@@ -32,7 +32,7 @@ class ListTraktCustomProperties(ListTraktStandardProperties):
         return self.get_unconfigured_item_data()
 
     def get_unconfigured_item_data(self):
-        if not self.owner or get_setting('trakt_cacheownlists'):
+        if not self.owner or TraktSettings().cache_own_lists:
             return self.get_cached_items() or {}
         return self.get_uncached_items() or {}
 

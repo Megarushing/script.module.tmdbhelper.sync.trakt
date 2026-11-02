@@ -1,6 +1,7 @@
 from tmdbhelper.lib.items.directories.mapper_basic import ItemMapper, NullItemMapper
 from jurialmunkey.ftools import cached_property
-from tmdbhelper.lib.addon.plugin import get_localized, get_setting
+from tmdbhelper.lib.addon.plugin import get_localized
+from tmdbhelper_sync_trakt.settings import TraktSettings
 from tmdbhelper_sync_trakt.directories.artwork import ADDONPATH
 from tmdbhelper.lib.addon.consts import RUNSCRIPT
 from contextlib import suppress
@@ -250,7 +251,7 @@ class StaticGenresItemMapper(ItemMapper):
 
     @cached_property
     def icon_path(self):
-        return get_setting('trakt_genre_icon_location', 'str')
+        return TraktSettings().genre_icon_location
 
     @cached_property
     def custom_icon(self):

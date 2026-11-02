@@ -1,0 +1,42 @@
+# Kodi Media Center language file
+msgid ""
+msgstr ""
+"Language: en_GB\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+msgctxt "#32000"
+msgid "Lists"
+msgstr ""
+
+msgctxt "#32001"
+msgid "Cache own lists"
+msgstr ""
+
+msgctxt "#32002"
+msgid "Cache items from your custom Trakt lists."
+msgstr ""
+
+msgctxt "#32003"
+msgid "Genre icon folder"
+msgstr ""
+
+msgctxt "#32004"
+msgid "Choose the folder containing custom icons for Trakt genres."
+msgstr ""
+
+msgctxt "#32005"
+msgid "Next episodes"
+msgstr ""
+
+msgctxt "#32006"
+msgid "Check calendar"
+msgstr ""
+
+msgctxt "#32007"
+msgid "Check the calendar for next episodes. Slower, but more accurate."
+msgstr ""
+
+msgctxt "#32008"
+msgid "Legacy preferences migrated"
+msgstr ""

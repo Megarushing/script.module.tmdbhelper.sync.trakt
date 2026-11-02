@@ -1,0 +1,53 @@
+from os.path import join
+from xml.etree import ElementTree
+from xbmcaddon import Addon
+from xbmcvfs import File, exists, translatePath
+
+
+class TraktSettings:
+    addon_id = 'script.module.tmdbhelper.sync.trakt'
+    legacy_settings = {
+        'cache_own_lists': 'trakt_cacheownlists',
+        'genre_icon_location': 'trakt_genre_icon_location',
+        'use_calendar': 'nextepisodes_usecalendar',
+    }
+
+    def __init__(self):
+        self.addon = Addon(self.addon_id)
+
+    @property
+    def cache_own_lists(self):
+        return self.addon.getSettingBool('cache_own_lists')
+
+    @property
+    def genre_icon_location(self):
+        return self.addon.getSetting('genre_icon_location')
+
+    @property
+    def use_calendar(self):
+        return self.addon.getSettingBool('use_calendar')
+
+    def get_configured_settings(self):
+        path = join(translatePath(self.addon.getAddonInfo('profile')), 'settings.xml')
+        if not exists(path):
+            return frozenset()
+        with File(path) as settings_file:
+            settings = ElementTree.fromstring(settings_file.read())
+        return frozenset(
+            setting.get('id') for setting in settings.iter('setting')
+            if setting.get('default') != 'true')
+
+    def migrate_setting(self, name, value):
+        self.addon.setSetting(name, value)
+        if self.addon.getSetting(name) != value:
+            raise RuntimeError(f'Unable to save migrated Trakt setting: {name}')
+
+    def migrate_settings(self):
+        if self.addon.getSettingBool('preferences_migrated'):
+            return
+        configured = self.get_configured_settings()
+        legacy_addon = Addon('plugin.video.themoviedb.helper')
+        for name, legacy_name in self.legacy_settings.items():
+            if name not in configured:
+                self.migrate_setting(name, legacy_addon.getSetting(legacy_name))
+        self.migrate_setting('preferences_migrated', 'true')
