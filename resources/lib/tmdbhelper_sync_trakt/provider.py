@@ -8,6 +8,7 @@ from tmdbhelper_sync_trakt.sync.service_types import SyncRatings, SyncFavorites
 from tmdbhelper_sync_trakt.actions.rating import ItemRating
 from tmdbhelper_sync_trakt.actions.favorites import ItemFavorites
 from tmdbhelper_sync_trakt.actions.comments import ItemComments
+from tmdbhelper_sync_trakt.actions.lists import TraktListActions
 from tmdbhelper_sync_trakt.directories.item import TraktDirectoryItem
 from tmdbhelper_sync_trakt.directories.routes import LIST_ROUTES
 from tmdbhelper_sync_trakt.monitor_lists import TraktMonitorLists
@@ -69,6 +70,7 @@ class Provider(SyncProvider):
     }
     list_routes = LIST_ROUTES
     monitor_lists_class = TraktMonitorLists
+    list_actions_class = TraktListActions
     stats_class = TraktStatsSupplier
     scrobbler_class = ProviderScrobbler
 
