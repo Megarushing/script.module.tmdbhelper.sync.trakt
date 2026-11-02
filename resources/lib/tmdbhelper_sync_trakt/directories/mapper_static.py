@@ -13,26 +13,41 @@ class StaticItemMapper(ItemMapper):
 
     @cached_property
     def list_slug(self):
+        return self.get_list_slug()
+
+    def get_list_slug(self):
         with suppress(KeyError):
             return self.meta['list']['ids']['slug']
 
     @cached_property
     def user_slug(self):
+        return self.get_user_slug()
+
+    def get_user_slug(self):
         with suppress(KeyError):
             return self.meta['list']['user']['ids']['slug']
 
     @cached_property
     def list_name(self):
+        return self.get_list_name()
+
+    def get_list_name(self):
         with suppress(KeyError):
             return self.meta['list'].get('name') or ''
 
     @cached_property
     def user_name(self):
+        return self.get_user_name()
+
+    def get_user_name(self):
         with suppress(KeyError):
             return self.meta['list']['user'].get('name') or self.user_slug or ''
 
     @cached_property
     def list_description(self):
+        return self.get_list_description()
+
+    def get_list_description(self):
         with suppress(KeyError):
             return self.meta['list'].get('description')
 
@@ -92,6 +107,9 @@ class StaticOfficialItemMapper(StaticItemMapper):
 
     @cached_property
     def list_slug(self):
+        return self.get_list_slug()
+
+    def get_list_slug(self):
         with suppress(KeyError):
             return self.meta['list']['ids']['trakt']
 
@@ -173,6 +191,9 @@ class StaticItemMapperFactoryHelper:
 
     @cached_property
     def is_available(self):
+        return self.get_is_available()
+
+    def get_is_available(self):
         if not self.user_slug:
             return False
         if not self.list_slug:
@@ -232,6 +253,9 @@ class StaticGenresItemMapper(ItemMapper):
 
     @cached_property
     def custom_icon(self):
+        return self.get_custom_icon()
+
+    def get_custom_icon(self):
         import xbmcvfs
         custom_icon = xbmcvfs.validatePath(xbmcvfs.translatePath(f'{self.icon_path}/{self.slug}.png'))
         custom_icon = custom_icon if custom_icon and xbmcvfs.exists(custom_icon) else None
@@ -239,6 +263,9 @@ class StaticGenresItemMapper(ItemMapper):
 
     @cached_property
     def icon(self):
+        return self.get_icon()
+
+    def get_icon(self):
         icon = self.custom_icon if self.icon_path else None
         icon = icon or f'{ADDONPATH}/resources/icons/trakt/genres.png'
         return icon

@@ -95,6 +95,9 @@ class TraktDiscoverCertifications(TraktDiscoverGenres):
 
     @cached_property
     def routes_items_movies(self):
+        return self.get_routes_items_movies()
+
+    def get_routes_items_movies(self):
         try:
             return self.main.trakt_api.get_response_json('certifications/movies')['us']
         except (KeyError, TypeError):
@@ -102,6 +105,9 @@ class TraktDiscoverCertifications(TraktDiscoverGenres):
 
     @cached_property
     def routes_items_shows(self):
+        return self.get_routes_items_shows()
+
+    def get_routes_items_shows(self):
         try:
             return self.main.trakt_api.get_response_json('certifications/shows')['us']
         except (KeyError, TypeError):
@@ -247,6 +253,9 @@ class TraktDiscoverMain(DiscoverMain):
 
     @cached_property
     def trakt_api(self):
+        return self.get_trakt_api()
+
+    def get_trakt_api(self):
         from tmdbhelper.lib.api.trakt.api import TraktAPI
         return TraktAPI()
 

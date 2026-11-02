@@ -35,6 +35,9 @@ class TraktSyncNextEpisodeItem(SyncNextEpisodeItem):
 
     @cached_property
     def response(self):
+        return self.get_response()
+
+    def get_response(self):
         if not self.trakt_slug:
             return {}
         return self.get_response_sync(

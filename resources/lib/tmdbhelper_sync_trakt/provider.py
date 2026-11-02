@@ -75,6 +75,14 @@ class Provider(SyncProvider):
         from tmdbhelper.lib.api.trakt.api import TraktAPI
         return TraktAPI()
 
+    @cached_property
+    def calendar(self):
+        return self.get_calendar()
+
+    def get_calendar(self):
+        from tmdbhelper_sync_trakt.calendar import TraktCalendarClient
+        return TraktCalendarClient(self.api)
+
     def is_authorized(self):
         return self.api is not None and self.api.authenticator.is_authorized
 

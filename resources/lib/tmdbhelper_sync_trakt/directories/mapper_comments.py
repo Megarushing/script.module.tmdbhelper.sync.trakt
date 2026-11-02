@@ -38,6 +38,9 @@ class CommentsItemMapper(ItemMapper):
 
     @cached_property
     def rating_score(self):
+        return self.get_rating_score()
+
+    def get_rating_score(self):
         rating_score = ', '.join([
             i for i in (
                 f'{get_localized(563)} {self.rating}/10' if self.rating else None,
@@ -62,6 +65,9 @@ class CommentsItemMapper(ItemMapper):
 
     @cached_property
     def comment(self):
+        return self.get_comment()
+
+    def get_comment(self):
         comment = '\n'.join([
             i for i in (
                 self.meta.get('comment'),

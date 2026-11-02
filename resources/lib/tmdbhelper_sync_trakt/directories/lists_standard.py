@@ -12,7 +12,7 @@ class ListTraktBoxOffice(ListTraktStandard):  # Box Office doesn't support filte
         return list_properties
 
 
-class ListTraktRecommendations(ListTraktStandard):  # Box Office doesn't support filters or pagination
+class ListTraktRecommendations(ListTraktStandard):
     def configure_list_properties(self, list_properties):
         list_properties = super().configure_list_properties(list_properties)
         list_properties.trakt_authorization = True

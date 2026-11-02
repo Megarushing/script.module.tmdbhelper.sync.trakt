@@ -1,5 +1,4 @@
 import random
-from jurialmunkey.parser import try_int
 from jurialmunkey.ftools import cached_property
 from tmdbhelper.lib.addon.plugin import convert_type
 from tmdbhelper_sync_trakt.directories.lists_filtered import (
@@ -34,8 +33,46 @@ class ListTraktRandomisedProperties(ListTraktStandardProperties):
 
     @cached_property
     def sorted_items(self):
-        import random
+        return self.get_sorted_items()
+
+    def get_sorted_items(self):
         return random.sample(self.filtered_items, self.sample_limit)
+
+
+class ListTraktMixedRandomisedProperties(ListTraktRandomisedProperties):
+    @cached_property
+    def configured_media_properties(self):
+        return self.get_configured_media_properties()
+
+    def get_configured_media_properties(self):
+        return tuple(self.configure_media_properties(properties) for properties in self.media_properties)
+
+    def configure_media_properties(self, properties):
+        properties.page = self.page
+        properties.length = self.length
+        properties.trakt_filters = self.trakt_filters
+        return properties
+
+    @cached_property
+    def items(self):
+        return self.get_items()
+
+    def get_items(self):
+        return [
+            item for properties in self.configured_media_properties
+            for item in properties.sorted_items]
+
+    @cached_property
+    def sample_limit(self):
+        # Preserve the mixed list's existing cap, taken from its TV sample.
+        return self.configured_media_properties[-1].sample_limit
+
+    def get_sorted_items(self):
+        return random.sample(self.items, self.sample_limit)
+
+    @cached_property
+    def container_content(self):
+        return convert_type(self.tmdb_type, 'container', items=self.sorted_items)
 
 
 class ListTraktRandomised(ListTraktStandard):
@@ -43,21 +80,22 @@ class ListTraktRandomised(ListTraktStandard):
     list_properties_class = ListTraktRandomisedProperties
     pagination = False
 
-    def get_items(self, *args, length=None, tmdb_type=None, **kwargs):
-        length = try_int(length)
+    def configure_list_properties(self, list_properties):
+        list_properties = super().configure_list_properties(list_properties)
+        if isinstance(list_properties, ListTraktMixedRandomisedProperties):
+            list_properties.media_properties = tuple(
+                self.get_media_properties(tmdb_type) for tmdb_type in ('movie', 'tv'))
+        return list_properties
 
+    def get_media_properties(self, tmdb_type):
+        properties = self.configure_list_properties(self.list_properties_class())
+        properties.tmdb_type = tmdb_type
+        return properties
+
+    def get_items(self, *args, tmdb_type=None, **kwargs):
         if tmdb_type == 'both':
-            import random
-            items = []
-            items += super().get_items(*args, length=length, tmdb_type='movie', **kwargs) or []
-            self.list_properties = self.configure_list_properties(self.list_properties_class())
-            items += super().get_items(*args, length=length, tmdb_type='tv', **kwargs) or []
-            items = random.sample(items, self.list_properties.sample_limit)
-            self.plugin_category = self.list_properties.plugin_name.format(localized=self.list_properties.localized, plural=convert_type('both', 'plural'))
-            self.container_content = convert_type('both', 'container', items=items)
-            return items
-
-        return super().get_items(*args, length=length, tmdb_type=tmdb_type, **kwargs)
+            self.list_properties = self.configure_list_properties(ListTraktMixedRandomisedProperties())
+        return super().get_items(*args, tmdb_type=tmdb_type, **kwargs)
 
 
 class ListTraktTrendingRandomised(ListTraktRandomised, ListTraktTrending):

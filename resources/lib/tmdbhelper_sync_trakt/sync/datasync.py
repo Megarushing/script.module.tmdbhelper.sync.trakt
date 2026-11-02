@@ -35,13 +35,7 @@ class TraktSyncDataGetterAllUnHiddenShowsInProgress(SyncDataGetter):
         return self.get_calendar_data()
 
     def get_calendar_data(self):
-        from tmdbhelper_sync_trakt.directories.lists_calendar import ListTraktCalendarProperties
-        list_properties = ListTraktCalendarProperties()
-        list_properties.trakt_api = self.provider.api
-        list_properties.trakt_date = self.calendar_startdate
-        list_properties.trakt_days = self.calendar_days
-        list_properties.trakt_type = 'episode'
-        return list_properties.api_response_json
+        return self.provider.calendar.get_episodes(self.calendar_startdate, self.calendar_days)
 
     @cached_property
     def calendar_episodes(self):
@@ -66,8 +60,7 @@ class TraktSyncDataGetterAllUnHiddenShowsInProgress(SyncDataGetter):
                     i['first_aired'],
                     utc_convert=True,
                     start_date=self.calendar_startdate,
-                    days=self.calendar_days
-                ):
+                    days=self.calendar_days):
                     continue
 
                 # Ignore specials
@@ -87,15 +80,14 @@ class TraktSyncDataGetterAllUnHiddenShowsInProgress(SyncDataGetter):
             return True
         if tmdb_id not in self.calendar_episodes:
             return True
-        for season in self.calendar_episodes[tmdb_id]:
-            # Check for a new season airing
-            if not self.get_episode_watchedcount(tmdb_id, season):
-                return False
-            # Check for a new episode airing
-            for episode in self.calendar_episodes[tmdb_id][season]:
-                if not self.get_episode_playcount(tmdb_id, season, episode):
-                    return False
-        return True
+        return all(
+            self.is_calendar_season_watched(tmdb_id, season, episodes)
+            for season, episodes in self.calendar_episodes[tmdb_id].items())
+
+    def is_calendar_season_watched(self, tmdb_id, season, episodes):
+        if not self.get_episode_watchedcount(tmdb_id, season):
+            return False
+        return all(self.get_episode_playcount(tmdb_id, season, episode) for episode in episodes)
 
     def is_inprogress_show(self, tmdb_id, aired_episodes, watched_episodes):
         if aired_episodes <= watched_episodes:
