@@ -75,6 +75,7 @@ class StaticItemMapper(ItemMapper):
             if v and type(v) not in [list, dict]
         }
         infoproperties.update({'is_sortable': 'True'})
+        infoproperties['sortby_info'] = 'trakt_sortby'
         return infoproperties
 
     def get_unique_ids(self):

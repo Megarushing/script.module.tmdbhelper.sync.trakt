@@ -5,6 +5,16 @@ from tmdbhelper_sync_trakt.directories.artwork import ADDONPATH, get_icon
 
 
 class TraktDirItemBuilder(BaseDirItemBuilder):
+    @cached_property
+    def infoproperties(self):
+        return self.get_infoproperties()
+
+    def get_infoproperties(self):
+        infoproperties = super().infoproperties
+        if self.base_item.sorting:
+            infoproperties['sortby_info'] = 'trakt_sortby'
+        return infoproperties
+
     def get_art(self):
         art = self.base_item.art.copy()
         art['icon'] = get_icon(self.base_item.art_icon, self.item_type if self.type_art else None)
