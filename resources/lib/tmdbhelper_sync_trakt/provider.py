@@ -7,6 +7,7 @@ from tmdbhelper_sync_trakt.scrobbler import ProviderScrobbler
 from tmdbhelper_sync_trakt.sync.service_types import SyncRatings, SyncFavorites
 from tmdbhelper_sync_trakt.actions.rating import ItemRating
 from tmdbhelper_sync_trakt.actions.favorites import ItemFavorites
+from tmdbhelper_sync_trakt.actions.comments import ItemComments
 from tmdbhelper_sync_trakt.directories.item import TraktDirectoryItem
 from tmdbhelper_sync_trakt.directories.routes import LIST_ROUTES
 from tmdbhelper_sync_trakt.monitor_lists import TraktMonitorLists
@@ -50,7 +51,11 @@ class Provider(SyncProvider):
         'shows_in_progress': datasync.TraktSyncDataGetterAllUnHiddenShowsInProgress,
     }
     service_sync_classes = {'SyncRatings': SyncRatings, 'SyncFavorites': SyncFavorites}
-    service_action_classes = {'traktrating': ItemRating, 'traktfavorites': ItemFavorites}
+    service_action_classes = {
+        'traktrating': ItemRating,
+        'traktfavorites': ItemFavorites,
+        'traktcomments': ItemComments,
+    }
     ratings_classes = {
         'movie': TraktRatingsSupplier,
         'tvshow': TraktRatingsSupplier,
