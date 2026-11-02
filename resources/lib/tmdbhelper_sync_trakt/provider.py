@@ -8,6 +8,7 @@ from tmdbhelper_sync_trakt.sync.service_types import SyncRatings, SyncFavorites
 from tmdbhelper_sync_trakt.actions.rating import ItemRating
 from tmdbhelper_sync_trakt.actions.favorites import ItemFavorites
 from tmdbhelper_sync_trakt.actions.comments import ItemComments
+from tmdbhelper_sync_trakt.actions.userlist import ItemUserList
 from tmdbhelper_sync_trakt.actions.lists import TraktListActions
 from tmdbhelper_sync_trakt.directories.item import TraktDirectoryItem
 from tmdbhelper_sync_trakt.directories.routes import LIST_ROUTES
@@ -56,6 +57,7 @@ class Provider(SyncProvider):
         'traktrating': ItemRating,
         'traktfavorites': ItemFavorites,
         'traktcomments': ItemComments,
+        'traktuserlist': ItemUserList,
     }
     ratings_classes = {
         'movie': TraktRatingsSupplier,
