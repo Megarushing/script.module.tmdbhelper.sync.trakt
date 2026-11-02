@@ -1,6 +1,6 @@
 from jurialmunkey.ftools import cached_property
 from tmdbhelper.lib.addon.tmdate import convert_timestamp
-from tmdbhelper.lib.items.directories.mapper_calendar import CalendarItemMapper
+from tmdbhelper_sync_trakt.directories.mapper_calendar_base import CalendarItemMapper
 from tmdbhelper.lib.items.directories.mapper_standard import MovieItemMapper
 
 

@@ -1,8 +1,8 @@
 from jurialmunkey.parser import boolean, try_int
 from tmdbhelper_sync_trakt.directories.mapper_calendar import FactoryCalendarMovieItemMapper
 from tmdbhelper.lib.addon.plugin import get_localized
-from tmdbhelper.lib.items.directories.lists_trakt import ListTraktFiltered
-from tmdbhelper.lib.items.directories.lists_calendar import (
+from tmdbhelper_sync_trakt.directories.lists_trakt import ListTraktFiltered
+from tmdbhelper_sync_trakt.directories.lists_calendar_base import (
     ListCalendar, ListCalendarProperties,
 )
 
@@ -31,8 +31,10 @@ class ListTraktCalendar(ListCalendar):
 
 
 class ListTraktCalendarMovieProperties(ListCalendarProperties):
+    item_mapper_class = staticmethod(FactoryCalendarMovieItemMapper)
+
     def get_mapped_item(self, item, add_infoproperties=None):
-        item_mapper = FactoryCalendarMovieItemMapper(item, add_infoproperties)
+        item_mapper = self.item_mapper_class(item, add_infoproperties)
         if not self.get_mapped_item_air_date_is_in_range(item_mapper):
             return
         return item_mapper.item

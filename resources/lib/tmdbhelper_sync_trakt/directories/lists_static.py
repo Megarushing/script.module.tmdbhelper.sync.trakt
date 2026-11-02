@@ -1,4 +1,4 @@
-from tmdbhelper_sync_trakt.directories.lists_standard import (
+from tmdbhelper_sync_trakt.directories.lists_trakt import (
     ListTraktStandard,
     ListTraktStandardProperties
 )

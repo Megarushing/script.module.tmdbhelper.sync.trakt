@@ -1,4 +1,4 @@
-from tmdbhelper.lib.items.directories.lists_trakt import ListTraktFiltered
+from tmdbhelper_sync_trakt.directories.lists_trakt import ListTraktFiltered
 
 
 class ListTraktTrending(ListTraktFiltered):

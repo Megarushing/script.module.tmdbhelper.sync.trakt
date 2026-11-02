@@ -1,6 +1,4 @@
-from tmdbhelper.lib.items.directories.lists_trakt import (
-    ListTraktStandard, ListTraktStandardProperties,
-)
+from tmdbhelper_sync_trakt.directories.lists_trakt import ListTraktStandard
 
 
 class ListTraktBoxOffice(ListTraktStandard):  # Box Office doesn't support filters or pagination

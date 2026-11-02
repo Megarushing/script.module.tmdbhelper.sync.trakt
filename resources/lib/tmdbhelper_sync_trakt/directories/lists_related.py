@@ -1,7 +1,7 @@
 from jurialmunkey.ftools import cached_property
 from tmdbhelper_sync_trakt.directories.mapper_comments import CommentsItemMapper
 from tmdbhelper_sync_trakt.directories.mapper_watchers import WatchersItemMapper
-from tmdbhelper_sync_trakt.directories.lists_standard import (
+from tmdbhelper_sync_trakt.directories.lists_trakt import (
     ListTraktStandard,
     ListTraktStandardProperties,
 )
