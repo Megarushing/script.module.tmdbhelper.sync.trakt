@@ -112,3 +112,31 @@ msgstr ""
 msgctxt "#32110"
 msgid "Successfully logged out of Trakt user account"
 msgstr ""
+
+msgctxt "#32200"
+msgid "Diagnostics"
+msgstr ""
+
+msgctxt "#32201"
+msgid "Log Trakt request"
+msgstr ""
+
+msgctxt "#32202"
+msgid "Request a Trakt API path and save the response in this module's profile folder."
+msgstr ""
+
+msgctxt "#32203"
+msgid "Authorization status"
+msgstr ""
+
+msgctxt "#32204"
+msgid "Show account authorization and token expiry without displaying token values."
+msgstr ""
+
+msgctxt "#32205"
+msgid "No response"
+msgstr ""
+
+msgctxt "#32206"
+msgid "URL"
+msgstr ""
