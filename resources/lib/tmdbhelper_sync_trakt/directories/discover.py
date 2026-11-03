@@ -256,7 +256,7 @@ class TraktDiscoverMain(DiscoverMain):
         return self.get_trakt_api()
 
     def get_trakt_api(self):
-        from tmdbhelper.lib.api.trakt.api import TraktAPI
+        from tmdbhelper_sync_trakt.api.api import TraktAPI
         return TraktAPI()
 
 

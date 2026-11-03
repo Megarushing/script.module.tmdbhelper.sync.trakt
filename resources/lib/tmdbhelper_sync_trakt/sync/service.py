@@ -1,5 +1,5 @@
 from jurialmunkey.parser import try_int
-from tmdbhelper.lib.addon.consts import TRAKT_MAX_ITEMS_PER_PAGE
+from tmdbhelper_sync_trakt.api.consts import TRAKT_MAX_ITEMS_PER_PAGE
 from tmdbhelper.lib.sync.providers.services import ServiceDataType
 from tmdbhelper_sync_trakt.sync.datatype import TraktDataType
 from tmdbhelper_sync_trakt.sync.service_itemdata import TraktSyncItem

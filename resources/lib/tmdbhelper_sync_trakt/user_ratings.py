@@ -1,7 +1,7 @@
 from hashlib import sha256
 from jurialmunkey.ftools import cached_property
 from jurialmunkey.parser import try_int
-from tmdbhelper.lib.addon.consts import TRAKT_MAX_ITEMS_PER_PAGE
+from tmdbhelper_sync_trakt.api.consts import TRAKT_MAX_ITEMS_PER_PAGE
 from tmdbhelper.lib.files.bcache import BasicCache
 
 

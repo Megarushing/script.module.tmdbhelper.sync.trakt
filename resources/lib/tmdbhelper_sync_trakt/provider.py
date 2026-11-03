@@ -94,7 +94,7 @@ class Provider(SyncProvider):
         return self.get_api()
 
     def get_api(self):
-        from tmdbhelper.lib.api.trakt.api import TraktAPI
+        from tmdbhelper_sync_trakt.api.api import TraktAPI
         return TraktAPI()
 
     @cached_property

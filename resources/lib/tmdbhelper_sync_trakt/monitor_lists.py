@@ -4,7 +4,7 @@ from jurialmunkey.parser import try_int
 from tmdbhelper.lib.addon.plugin import get_localized
 from tmdbhelper.lib.items.directories.mapper_basic import ItemMapper
 from tmdbhelper.lib.sync.providers.monitor_lists import MonitorListsSupplier, is_provider_user_slug
-from tmdbhelper.lib.addon.consts import TRAKT_MAX_ITEMS_PER_PAGE
+from tmdbhelper_sync_trakt.api.consts import TRAKT_MAX_ITEMS_PER_PAGE
 
 
 class TraktMonitorListMapper(ItemMapper):

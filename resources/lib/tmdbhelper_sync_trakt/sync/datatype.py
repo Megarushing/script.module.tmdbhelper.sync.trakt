@@ -1,4 +1,4 @@
-from tmdbhelper.lib.addon.consts import TRAKT_MAX_ITEMS_PER_PAGE
+from tmdbhelper_sync_trakt.api.consts import TRAKT_MAX_ITEMS_PER_PAGE
 from tmdbhelper.lib.addon.thread import ParallelThread
 from tmdbhelper.lib.sync.datatype import DataType, DataTypeEpisodesInShows, DataTypeShowsToEpisodes
 
