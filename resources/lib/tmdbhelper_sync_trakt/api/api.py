@@ -1,6 +1,7 @@
 from jurialmunkey.ftools import cached_property
 from tmdbhelper.lib.api.request import NoCacheRequestAPI
-from tmdbhelper_sync_trakt.api.keys import CLIENT_ID, USER_TOKEN
+from tmdbhelper_sync_trakt.api.keys import CLIENT_ID
+from tmdbhelper_sync_trakt.api.credentials import TraktTokenHandler
 from tmdbhelper_sync_trakt.api.authenticator import TraktAuthenticator
 from tmdbhelper_sync_trakt.api.profile import TraktProfile
 
@@ -15,7 +16,7 @@ OAUTH_TOKEN_URL = 'https://auth.trakt.tv/oauth/token'
 class TraktAPI(NoCacheRequestAPI):
 
     client_id = CLIENT_ID
-    user_token = USER_TOKEN
+    user_token = None
 
     def __init__(
             self,
@@ -25,8 +26,8 @@ class TraktAPI(NoCacheRequestAPI):
             force=False):
         super(TraktAPI, self).__init__(req_api_url=API_URL, req_api_name='TraktAPI', timeout=20)
 
-        TraktAPI.client_id = client_id or self.client_id
-        TraktAPI.user_token = user_token or self.user_token
+        self.client_id = client_id or self.client_id
+        self.user_token = user_token if user_token is not None else TraktTokenHandler()
         self.login_if_required = login_if_required
         self.login() if force else self.authorize()
 

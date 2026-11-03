@@ -1,3 +1,4 @@
+from tmdbhelper_sync_trakt.directories.base import TraktList
 from jurialmunkey.ftools import cached_property
 from tmdbhelper.lib.addon.plugin import executebuiltin, get_localized
 from tmdbhelper.lib.items.directories.base.lists_base import BaseDirList
@@ -34,8 +35,13 @@ class TraktDirectoryProperties(ListProperties):
     def entries(self):
         return self.get_entries()
 
+    def configure_menu_item(self, item):
+        item.sync_provider = self.sync_provider
+        return item
+
     def get_entries(self):
-        entries = TraktBaseDirList(self.get_menu_items()).get_basedir(self.tmdb_type)
+        menu_items = [self.configure_menu_item(item) for item in self.get_menu_items()]
+        entries = TraktBaseDirList(menu_items).get_basedir(self.tmdb_type)
         if self.group:
             return [{'entry': entry, 'count': 1} for entry in entries if entry.item.group == int(self.group)]
         if not self.grouped:
@@ -85,7 +91,7 @@ class TraktCalendarDirectoryProperties(TraktDirectoryProperties):
         return get_all_calendar_class_instances(**self.calendar_params)
 
 
-class ListTraktDirectory(ListDefault):
+class ListTraktDirectory(TraktList, ListDefault):
     list_properties_class = TraktDirectoryProperties
     kodi_details = False
 
@@ -143,5 +149,5 @@ class ListTraktDVDCalendarDirectory(ListTraktMovieCalendarDirectory):
 
 class ListTraktAuthenticate(ListTraktDirectory):
     def get_items(self, **kwargs):
-        executebuiltin('RunScript(plugin.video.themoviedb.helper,authenticate_trakt)')
+        executebuiltin('RunScript(script.module.tmdbhelper.sync.trakt,action=authenticate)')
         return []

@@ -40,3 +40,75 @@ msgstr ""
 msgctxt "#32008"
 msgid "Legacy preferences migrated"
 msgstr ""
+
+msgctxt "#32009"
+msgid "Account"
+msgstr ""
+
+msgctxt "#32010"
+msgid "Store the Trakt account authentication token used by TMDbHelper."
+msgstr ""
+
+msgctxt "#32011"
+msgid "Sign in"
+msgstr ""
+
+msgctxt "#32012"
+msgid "Connect your Trakt account to TMDbHelper."
+msgstr ""
+
+msgctxt "#32013"
+msgid "Sign out"
+msgstr ""
+
+msgctxt "#32014"
+msgid "Disconnect your Trakt account from TMDbHelper."
+msgstr ""
+
+msgctxt "#32015"
+msgid "Legacy credentials migrated"
+msgstr ""
+
+msgctxt "#32100"
+msgid "Unauthorised 401 Error"
+msgstr ""
+
+msgctxt "#32101"
+msgid "Token"
+msgstr ""
+
+msgctxt "#32102"
+msgid "You must authenticate your Trakt account to use this feature."
+msgstr ""
+
+msgctxt "#32103"
+msgid "Trakt Authentication"
+msgstr ""
+
+msgctxt "#32104"
+msgid "Go to [B]{}[/B]"
+msgstr ""
+
+msgctxt "#32105"
+msgid "Enter the code"
+msgstr ""
+
+msgctxt "#32106"
+msgid "Trakt user account logout"
+msgstr ""
+
+msgctxt "#32107"
+msgid "Do you wish to logout of your Trakt account?"
+msgstr ""
+
+msgctxt "#32108"
+msgid "Trakt access token not found"
+msgstr ""
+
+msgctxt "#32109"
+msgid "Logout failed!"
+msgstr ""
+
+msgctxt "#32110"
+msgid "Successfully logged out of Trakt user account"
+msgstr ""

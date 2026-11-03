@@ -1,3 +1,4 @@
+from tmdbhelper_sync_trakt.directories.base import TraktList
 from jurialmunkey.ftools import cached_property
 from tmdbhelper.lib.addon.plugin import get_localized, PLUGINPATH
 from tmdbhelper.lib.items.directories.lists_default import ListDefault, ListProperties
@@ -46,7 +47,7 @@ class ListDiscoverProperties(ListProperties):
         return container.get_directory(items_only=True, build_items=False) or []
 
 
-class ListDiscoverDir(ListDefault):
+class ListDiscoverDir(TraktList, ListDefault):
     list_properties_class = ListDiscoverProperties
     kodi_details = False
 
@@ -64,7 +65,7 @@ class ListDiscoverDir(ListDefault):
 class ListDiscover(ListDiscoverDir):
     def get_items(self, **kwargs):
         from tmdbhelper_sync_trakt.directories.discover import TraktDiscover
-        discover = TraktDiscover()
+        discover = TraktDiscover(self.sync_provider)
         discover.load_values(**kwargs)
         discover.doModal()
         return super().get_items(**kwargs)

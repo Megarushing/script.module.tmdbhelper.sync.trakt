@@ -73,7 +73,7 @@ class ItemUserList(ItemAction):
     def get_users_lists(self):
         from tmdbhelper_sync_trakt.directories.lists_static import ListTraktStaticOwned
         container = ListTraktStaticOwned(-1, '')
-        container.trakt_api = self.trakt_api
+        container.sync_provider = self.sync_provider
         users_lists = container.get_items(tmdb_type='both') or []
         users_lists.append({'label': get_localized(32299)})
         return users_lists

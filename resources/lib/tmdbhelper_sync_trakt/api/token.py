@@ -6,7 +6,8 @@ from jurialmunkey.ftools import cached_property
 from tmdbhelper.lib.files.locker import mutexlock
 from tmdbhelper.lib.files.futils import json_loads as data_loads
 from tmdbhelper.lib.files.futils import json_dumps as data_dumps
-from tmdbhelper.lib.addon.plugin import get_localized, get_setting, ADDONPATH, KeyGetter
+from tmdbhelper.lib.addon.plugin import get_setting, ADDONPATH, KeyGetter
+from tmdbhelper_sync_trakt.localization import get_localized
 from tmdbhelper.lib.addon.logger import kodi_log, TimerFunc
 from tmdbhelper.lib.addon.tmdate import (
     get_datetime_now,
@@ -241,13 +242,13 @@ class TraktStoredAccessToken:
             self.trakt_api.del_authorisation_token(self.access_token)
             if self.access_token else None
         )
-        head = get_localized(32212)
+        head = get_localized(32106)
         text = (
-            get_localized(32214)
+            get_localized(32108)
             if not response else
-            get_localized(32215)
+            get_localized(32109)
             if response.status_code != 200 else
-            get_localized(32216)
+            get_localized(32110)
         )
         self.delete_stored_authorization()
         Dialog().ok(head, text)

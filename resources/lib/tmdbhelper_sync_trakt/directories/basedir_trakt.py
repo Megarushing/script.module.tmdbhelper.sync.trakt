@@ -7,7 +7,7 @@ from tmdbhelper.lib.addon.plugin import get_localized
 class BaseDirItemTraktAuthorised(BaseDirItem, BaseDirItemAuthorised):
     def get_authorisation(self):
         from tmdbhelper_sync_trakt.api.auth import TraktAuthorisation
-        return TraktAuthorisation()
+        return TraktAuthorisation(self.sync_provider)
 
 
 class BaseDirItemTraktFavorites(BaseDirItemTraktAuthorised):

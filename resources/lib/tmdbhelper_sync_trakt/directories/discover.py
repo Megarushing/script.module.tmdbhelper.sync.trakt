@@ -1,4 +1,5 @@
 from tmdbhelper.lib.addon.plugin import get_localized, ADDONPATH
+from tmdbhelper_sync_trakt.api.contains import TraktContainerAPIs
 from tmdbhelper_sync_trakt.directories.artwork import ADDONPATH as TRAKTPATH
 from jurialmunkey.ftools import cached_property
 from xbmcgui import Dialog, INPUT_NUMERIC
@@ -206,7 +207,7 @@ class TraktDiscoverReset(DiscoverReset):
     pass
 
 
-class TraktDiscoverMain(DiscoverMain):
+class TraktDiscoverMain(TraktContainerAPIs, DiscoverMain):
 
     file = NODE_FILENAME
     winprop = 'TraktDiscover.Path'
@@ -251,14 +252,8 @@ class TraktDiscoverMain(DiscoverMain):
             'reset': TraktDiscoverReset(self),
         }
 
-    @cached_property
-    def trakt_api(self):
-        return self.get_trakt_api()
 
-    def get_trakt_api(self):
-        from tmdbhelper_sync_trakt.api.api import TraktAPI
-        return TraktAPI()
-
-
-def TraktDiscover():
-    return TraktDiscoverMain('DialogSelect.xml', ADDONPATH)
+def TraktDiscover(provider):
+    main = TraktDiscoverMain('DialogSelect.xml', ADDONPATH)
+    main.sync_provider = provider
+    return main

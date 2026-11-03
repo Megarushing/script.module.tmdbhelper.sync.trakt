@@ -1,6 +1,38 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <settings version="1">
     <section id="script.module.tmdbhelper.sync.trakt">
+        <category id="account" label="32009">
+            <group id="1">
+                <setting id="token" type="string" label="32101" help="32010">
+                    <level>0</level>
+                    <default/>
+                    <visible>false</visible>
+                    <constraints><allowempty>true</allowempty></constraints>
+                    <control type="edit" format="string"/>
+                </setting>
+                <setting id="authenticate" type="action" label="32011" help="32012">
+                    <level>0</level>
+                    <data>RunScript(script.module.tmdbhelper.sync.trakt,action=authenticate)</data>
+                    <control type="button" format="action"><close>true</close></control>
+                </setting>
+                <setting id="revoke" type="action" label="32013" help="32014">
+                    <level>0</level>
+                    <data>RunScript(script.module.tmdbhelper.sync.trakt,action=revoke)</data>
+                    <dependencies>
+                        <dependency type="visible">
+                            <condition operator="!is" setting="token"/>
+                        </dependency>
+                    </dependencies>
+                    <control type="button" format="action"><close>true</close></control>
+                </setting>
+                <setting id="credentials_migrated" type="boolean" label="32015">
+                    <level>0</level>
+                    <default>false</default>
+                    <visible>false</visible>
+                    <control type="toggle"/>
+                </setting>
+            </group>
+        </category>
         <category id="lists" label="32000">
             <group id="1">
                 <setting id="cache_own_lists" type="boolean" label="32001" help="32002">

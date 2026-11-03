@@ -1,4 +1,5 @@
 from jurialmunkey.ftools import cached_property
+from tmdbhelper_sync_trakt.api.contains import TraktContainerAPIs
 from tmdbhelper.lib.items.directories.base.basedir_item import BaseDirItem
 from tmdbhelper.lib.items.directories.base.item_builder import BaseDirItemBuilder
 from tmdbhelper_sync_trakt.directories.artwork import ADDONPATH, get_icon
@@ -21,7 +22,7 @@ class TraktDirItemBuilder(BaseDirItemBuilder):
         return art
 
 
-class TraktDirItem(BaseDirItem):
+class TraktDirItem(TraktContainerAPIs, BaseDirItem):
     item_builder = TraktDirItemBuilder
     art_icon = 'resources/icons/trakt/trakt.png'
 

@@ -1,3 +1,4 @@
+from tmdbhelper_sync_trakt.directories.base import TraktList
 from tmdbhelper.lib.items.directories.lists_default import UncachedItemsPage
 from tmdbhelper.lib.items.directories.tmdb.lists_standard import ListStandard, ListStandardProperties
 from tmdbhelper.lib.items.directories.mapper_standard import FactoryItemMapper
@@ -85,7 +86,7 @@ class ListTraktStandardProperties(ListStandardProperties):
             trakt_type=self.trakt_type, sub_type=self.sub_type).item
 
 
-class ListTraktStandard(ListStandard):
+class ListTraktStandard(TraktList, ListStandard):
 
     list_properties_class = ListTraktStandardProperties
 

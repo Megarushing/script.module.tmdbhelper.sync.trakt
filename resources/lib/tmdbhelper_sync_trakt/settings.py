@@ -2,10 +2,13 @@ from os.path import join
 from xml.etree import ElementTree
 from xbmcaddon import Addon
 from xbmcvfs import File, exists, translatePath
+from jurialmunkey.window import get_property
+from tmdbhelper.lib.files.locker import mutexlock
 
 
 class TraktSettings:
     addon_id = 'script.module.tmdbhelper.sync.trakt'
+    mutex_lockname = 'TraktCheckingAuthorization'
     legacy_settings = {
         'cache_own_lists': 'trakt_cacheownlists',
         'genre_icon_location': 'trakt_genre_icon_location',
@@ -43,6 +46,10 @@ class TraktSettings:
             raise RuntimeError(f'Unable to save migrated Trakt setting: {name}')
 
     def migrate_settings(self):
+        self.migrate_preferences()
+        self.migrate_credentials()
+
+    def migrate_preferences(self):
         if self.addon.getSettingBool('preferences_migrated'):
             return
         configured = self.get_configured_settings()
@@ -51,3 +58,26 @@ class TraktSettings:
             if name not in configured:
                 self.migrate_setting(name, legacy_addon.getSetting(legacy_name))
         self.migrate_setting('preferences_migrated', 'true')
+
+    def migrate_credentials(self):
+        if self.migrate_credentials_locked() is not True:
+            raise RuntimeError('Trakt credential migration was interrupted')
+
+    @mutexlock
+    def migrate_credentials_locked(self):
+        if self.addon.getSettingBool('credentials_migrated'):
+            return True
+        configured = self.get_configured_settings()
+        if 'token' not in configured and not self.addon.getSetting('token'):
+            legacy_addon = Addon('plugin.video.themoviedb.helper')
+            self.migrate_setting('token', legacy_addon.getSetting('trakt_token'))
+        self.migrate_setting('credentials_migrated', 'true')
+        self.clear_authorization_session()
+        return True
+
+    @staticmethod
+    def clear_authorization_session():
+        for name in (
+                'TraktUserToken', 'TraktIsAuth', 'TraktRefreshAttempts',
+                'TraktRefreshTimeStamp', 'TraktAttemptedLogin'):
+            get_property(name, clear_property=True)

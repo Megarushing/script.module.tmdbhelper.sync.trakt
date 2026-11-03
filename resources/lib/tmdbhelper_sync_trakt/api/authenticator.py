@@ -3,7 +3,8 @@ from jurialmunkey.parser import boolean
 from jurialmunkey.window import get_property
 from jurialmunkey.ftools import cached_property
 from tmdbhelper_sync_trakt.api.token import TraktStoredAccessToken
-from tmdbhelper.lib.addon.plugin import get_localized, KeyGetter
+from tmdbhelper.lib.addon.plugin import get_localized as get_kodi_localized, KeyGetter
+from tmdbhelper_sync_trakt.localization import get_localized
 from tmdbhelper.lib.addon.logger import kodi_log
 from tmdbhelper.lib.files.locker import mutexlock
 
@@ -55,11 +56,11 @@ class TraktAuthenticator:
 
     @cached_property
     def dialog_noapikey_header(self):
-        return f'{get_localized(32007)} {self.trakt_api.req_api_name} {get_localized(32011)}'
+        return f'{get_localized(32100)} {self.trakt_api.req_api_name} {get_localized(32101)}'
 
     @cached_property
     def dialog_noapikey_text(self):
-        return get_localized(32012)
+        return get_localized(32102)
 
     @cached_property
     def code(self):
@@ -87,11 +88,11 @@ class TraktAuthenticator:
 
     @cached_property
     def auth_dialog_head(self):
-        return get_localized(32097)
+        return get_localized(32103)
 
     @cached_property
     def auth_dialog_text(self):
-        return f'{get_localized(32096).format(self.verification_url)}\n{get_localized(32095)}: [B]{self.user_code}[/B]'
+        return f'{get_localized(32104).format(self.verification_url)}\n{get_localized(32105)}: [B]{self.user_code}[/B]'
 
     @cached_property
     def auth_dialog(self):
@@ -181,9 +182,9 @@ class TraktAuthenticator:
         x = Dialog().yesnocustom(
             self.dialog_noapikey_header,
             self.dialog_noapikey_text,
-            nolabel=get_localized(222),
-            yeslabel=get_localized(186),
-            customlabel=get_localized(13170),
+            nolabel=get_kodi_localized(222),
+            yeslabel=get_kodi_localized(186),
+            customlabel=get_kodi_localized(13170),
             defaultbutton=DLG_YESNO_YES_BTN
         )
         routes = {
@@ -202,7 +203,7 @@ class TraktAuthenticator:
         self.poller()
 
     def logout(self, confirmation=True):
-        if confirmation and not Dialog().yesno(get_localized(32212), get_localized(32213)):
+        if confirmation and not Dialog().yesno(get_localized(32106), get_localized(32107)):
             return
         TraktStoredAccessToken(self.trakt_api).logout()
         from tmdbhelper.lib.sync.providers.selection import SyncProviderSetting
