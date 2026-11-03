@@ -13,17 +13,12 @@ class ItemAction(BasicItemSync):
     def get_trakt_api(self):
         return self.sync_provider.api
 
-    def get_query_database(self):
-        query_database = super().get_query_database()
-        query_database.trakt_api = self.trakt_api
-        return query_database
-
     @cached_property
     def trakt_slug(self):
         return self.get_trakt_slug()
 
     def get_trakt_slug(self):
-        return self.query_database.get_trakt_id(self.tmdb_id, 'tmdb', self.base_item_type, output_type='slug')
+        return self.sync_provider.identifiers.get_id(self.tmdb_id, item_type=self.base_item_type)
 
     def get_post_response_args(self):
         return ('sync', self.method, )

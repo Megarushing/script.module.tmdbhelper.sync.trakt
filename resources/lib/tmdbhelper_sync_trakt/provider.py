@@ -15,6 +15,7 @@ from tmdbhelper_sync_trakt.directories.routes import LIST_ROUTES
 from tmdbhelper_sync_trakt.monitor_lists import TraktMonitorLists
 from tmdbhelper_sync_trakt.stats import TraktStatsSupplier
 from tmdbhelper_sync_trakt.settings import TraktSettings
+from tmdbhelper_sync_trakt.identifiers.client import TraktIdentifierClient, TraktIdentifierResolver
 from tmdbhelper_sync_trakt.ratings import (
     TraktRatingsSupplier, TraktSeasonRatingsSupplier, TraktEpisodeRatingsSupplier,
 )
@@ -75,6 +76,7 @@ class Provider(SyncProvider):
     monitor_lists_class = TraktMonitorLists
     list_actions_class = TraktListActions
     stats_class = TraktStatsSupplier
+    identifier_resolver_class = TraktIdentifierResolver
     scrobbler_class = ProviderScrobbler
 
     @cached_property
@@ -94,6 +96,13 @@ class Provider(SyncProvider):
     def get_api(self):
         from tmdbhelper.lib.api.trakt.api import TraktAPI
         return TraktAPI()
+
+    @cached_property
+    def identifiers(self):
+        return self.get_identifiers()
+
+    def get_identifiers(self):
+        return TraktIdentifierClient(self.api)
 
     @cached_property
     def calendar(self):

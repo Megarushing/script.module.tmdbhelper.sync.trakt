@@ -10,6 +10,7 @@ from tmdbhelper_sync_trakt.directories.mapper_static import (
     StaticGenresItemMapper
 )
 from jurialmunkey.ftools import cached_property
+from tmdbhelper_sync_trakt.identifiers.client import TraktIdentifierClient
 from tmdbhelper.lib.addon.plugin import get_localized
 from contextlib import suppress
 
@@ -68,7 +69,10 @@ class ListTraktStaticListedProperties(ListTraktStaticProperties):
 
     @cached_property
     def trakt_slug(self):
-        return self.query_database.get_trakt_id(self.tmdb_id, 'tmdb', item_type=self.trakt_type, output_type='slug')
+        return self.get_trakt_slug()
+
+    def get_trakt_slug(self):
+        return TraktIdentifierClient(self.trakt_api).get_id(self.tmdb_id, item_type=self.trakt_type)
 
     def get_mapped_item(self, item, add_infoproperties=None):
         """ Listed lists are flatter so need to reconfigure to match config of other types """
