@@ -6,7 +6,6 @@ from tmdbhelper_sync_trakt.api.token import TraktStoredAccessToken
 from tmdbhelper.lib.addon.plugin import get_localized as get_kodi_localized, KeyGetter
 from tmdbhelper_sync_trakt.localization import get_localized
 from tmdbhelper.lib.addon.logger import kodi_log
-from tmdbhelper.lib.files.locker import mutexlock
 
 
 class TraktAuthenticator:
@@ -17,28 +16,26 @@ class TraktAuthenticator:
 
     def __init__(self, trakt_api):
         self.trakt_api = trakt_api
+        self.login_if_required = trakt_api.login_if_required
 
     def get_key(self, dictionary, key):
         return KeyGetter(dictionary).get_key(key)
 
     @property
     def attempted_login(self):
-        return self.attempted_login_winprop
+        return boolean(get_property('TraktAttemptedLogin'))
 
     @attempted_login.setter
     def attempted_login(self, value):
-        self.attempted_login_winprop = get_property('TraktAttemptedLogin', f'{value}')
+        get_property('TraktAttemptedLogin', f'{value}')
 
-    @cached_property
-    def attempted_login_winprop(self):
-        return boolean(get_property('TraktAttemptedLogin'))
-
-    @cached_property
+    @property
     def authorization(self):
         return self.trakt_stored_access_token.authorization
 
-    @cached_property
+    @property
     def trakt_stored_access_token(self):
+        # A token snapshot belongs to one operation, including across threads sharing this client.
         return TraktStoredAccessToken(self.trakt_api)
 
     @property
@@ -50,8 +47,7 @@ class TraktAuthenticator:
         return bool(self.access_token)
 
     def authorize(self, forced=False):
-        if not self.is_authorized and forced:
-            self.ask_to_login()
+        self.login_if_required = self.login_if_required or forced
         return self.is_authorized
 
     @cached_property
@@ -105,7 +101,6 @@ class TraktAuthenticator:
         auth_dialog_route = {
             'aborted': self.on_aborted,
             'expired': self.on_expired,
-            'success': self.on_success,
         }
         return auth_dialog_route[self.state]
 
@@ -116,10 +111,6 @@ class TraktAuthenticator:
     def auth_dialog_update(self):
         self.progress += self.interval
         self.auth_dialog.update(self.auth_dialog_progress)
-
-    def auth_dialog_close(self):
-        self.auth_dialog.close()
-        self.auth_dialog_route()
 
     @cached_property
     def xbmc_monitor(self):
@@ -134,17 +125,24 @@ class TraktAuthenticator:
         """Triggered when device authentication was aborted"""
         kodi_log(u'Trakt authentication aborted!', 1)
 
-    def on_success(self):
+    def on_success(self, authorization):
         """Triggered when device authentication has been completed"""
         kodi_log(u'Trakt authenticated successfully!', 1)
-        self.trakt_stored_access_token.stored_authorization = self.authorization
-        self.trakt_stored_access_token.update_stored_authorization()
-        self.trakt_stored_access_token.update_traktisauth_property()
+        token = self.trakt_stored_access_token
+        token.stored_authorization = authorization
+        token.update_stored_authorization()
+        token.update_traktisauth_property()
+        self.attempted_login = False
+
+    def configure_provider(self):
         from tmdbhelper.lib.script.sync.provider_setup import SyncProviderOnboarding
         SyncProviderOnboarding('script.module.tmdbhelper.sync.trakt').configure()
 
-    def poller(self):
+    def notify_failure(self):
+        Dialog().ok(get_localized(32103), get_localized(32111))
 
+    def poller(self):
+        authorization = None
         while True:
 
             if self.xbmc_monitor.abortRequested():
@@ -161,21 +159,22 @@ class TraktAuthenticator:
                 self.state = 'expired'
                 break
 
-            self.authorization = self.trakt_api.get_authorisation_token(self.device_code)
+            authorization = self.trakt_api.get_authorisation_token(self.device_code)
 
-            if self.authorization:
+            if authorization:
                 self.state = 'success'
                 break
 
             self.xbmc_monitor.waitForAbort(self.interval)
 
-        self.auth_dialog_close()
+        self.auth_dialog.close()
+        if self.state == 'success':
+            self.on_success(authorization)
+            return authorization
+        self.auth_dialog_route()
 
-    mutex_lockname = 'TraktAskingForLogin'
-
-    @mutexlock
     def ask_to_login(self):
-        # We only ask once per instance to avoid spamming user with login prompts
+        # Called only by the owner of the shared authorization recovery lock.
         if self.attempted_login:
             return
 
@@ -187,25 +186,29 @@ class TraktAuthenticator:
             customlabel=get_kodi_localized(13170),
             defaultbutton=DLG_YESNO_YES_BTN
         )
-        routes = {
-            1: self.login,  # Yes (OK)
-            2: lambda: setattr(self, 'attempted_login', True)  # Custom (Never)
-        }
-
-        try:
-            return routes[x]()
-        except KeyError:
-            return
+        if x == 1:
+            return self.login_device()
+        if x == 2:
+            self.attempted_login = True
 
     def login(self):
+        return self.trakt_stored_access_token.recover(allow_login=True, force_login=True)
+
+    def get_login_authorization(self, prompt=True):
+        # A fresh session must obtain new device codes after failure or cancellation.
+        session = TraktAuthenticator(self.trakt_api)
+        return session.ask_to_login() if prompt else session.login_device()
+
+    def login_device(self):
         if not self.user_code or not self.device_code:
             return
-        self.poller()
+        return self.poller()
 
     def logout(self, confirmation=True):
         if confirmation and not Dialog().yesno(get_localized(32106), get_localized(32107)):
             return
-        TraktStoredAccessToken(self.trakt_api).logout()
+        if not self.trakt_stored_access_token.logout():
+            return
         from tmdbhelper.lib.sync.providers.selection import SyncProviderSetting
         SyncProviderSetting.clear_provider('trakt')
         return True

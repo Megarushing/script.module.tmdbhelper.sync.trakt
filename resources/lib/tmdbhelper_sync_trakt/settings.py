@@ -60,6 +60,8 @@ class TraktSettings:
         self.migrate_setting('preferences_migrated', 'true')
 
     def migrate_credentials(self):
+        if self.addon.getSettingBool('credentials_migrated'):
+            return
         if self.migrate_credentials_locked() is not True:
             raise RuntimeError('Trakt credential migration was interrupted')
 

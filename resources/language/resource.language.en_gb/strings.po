@@ -113,6 +113,10 @@ msgctxt "#32110"
 msgid "Successfully logged out of Trakt user account"
 msgstr ""
 
+msgctxt "#32111"
+msgid "Trakt authorization could not be completed. Automatic authorization attempts are paused for five minutes. You can try signing in again from the Trakt account settings."
+msgstr ""
+
 msgctxt "#32200"
 msgid "Diagnostics"
 msgstr ""
