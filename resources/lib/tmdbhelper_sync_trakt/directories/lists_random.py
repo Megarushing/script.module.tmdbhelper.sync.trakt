@@ -1,6 +1,7 @@
 import random
 from jurialmunkey.ftools import cached_property
 from tmdbhelper.lib.addon.plugin import convert_type
+from tmdbhelper.lib.addon.stablerandom import stable_random, stable_list_choice
 from tmdbhelper_sync_trakt.directories.lists_filtered import (
     ListTraktTrending,
     ListTraktPopular,
@@ -31,12 +32,14 @@ class ListTraktRandomisedProperties(ListTraktStandardProperties):
     def sample_limit(self):
         return min((self.pmax * 20), len(self.filtered_items))  # Make sure we dont try to sample more items than we have
 
+    rng = random  # ListTraktRandomised swaps in a generator that keeps the same picks all day
+
     @cached_property
     def sorted_items(self):
         return self.get_sorted_items()
 
     def get_sorted_items(self):
-        return random.sample(self.filtered_items, self.sample_limit)
+        return self.rng.sample(self.filtered_items, self.sample_limit)
 
 
 class ListTraktMixedRandomisedProperties(ListTraktRandomisedProperties):
@@ -68,7 +71,7 @@ class ListTraktMixedRandomisedProperties(ListTraktRandomisedProperties):
         return self.configured_media_properties[-1].sample_limit
 
     def get_sorted_items(self):
-        return random.sample(self.items, self.sample_limit)
+        return self.rng.sample(self.items, self.sample_limit)
 
     @cached_property
     def container_content(self):
@@ -82,6 +85,7 @@ class ListTraktRandomised(ListTraktStandard):
 
     def configure_list_properties(self, list_properties):
         list_properties = super().configure_list_properties(list_properties)
+        list_properties.rng = stable_random(self.paramstring)
         if isinstance(list_properties, ListTraktMixedRandomisedProperties):
             list_properties.media_properties = tuple(
                 self.get_media_properties(tmdb_type) for tmdb_type in ('movie', 'tv'))
@@ -122,8 +126,12 @@ class ListTraktStaticTrendingRandomised(ListTraktCustom):
     sample_class = ListTraktStaticTrending
 
     def get_items(self, *args, tmdb_type=None, **kwargs):
-        item = random.choice(self.sample_class(-1, 'nextpage=false').get_items(tmdb_type='both'))
-        return super().get_items(**item['params'])
+        items = [i for i in self.sample_class(-1, 'nextpage=false').get_items(tmdb_type='both') or () if i and i.get('params')]
+        if not items:
+            return []
+        # Keep the requested page/options when delegating to the selected list.
+        kwargs.update(stable_list_choice(self.paramstring, items)['params'])
+        return super().get_items(**kwargs)
 
 
 class ListTraktStaticPopularRandomised(ListTraktStaticTrendingRandomised):
