@@ -77,6 +77,17 @@ class RandomListPaginationTest(unittest.TestCase):
             picks.append(pages[0])
         self.assertEqual(len(set(picks)), 3)
 
+    def test_hidden_and_paramless_entries_are_never_picked(self):
+        class MixedLists(SampleLists):
+            def get_items(self, **kwargs):
+                return [None, {}, {'label': 'hidden'}, {'params': dict(self.params)}]
+        for slot in ('', '1', '2', '3'):
+            wrapper = make_wrapper()
+            wrapper.sample_class = MixedLists
+            wrapper.paramstring = f'info=random_likedlists&random_slot={slot}'
+            with self.subTest(slot=slot):
+                self.assertEqual(wrapper.get_items(page=1)['list_slug'], 'mindfuck')
+
     def test_empty_random_list_pool_still_returns_empty(self):
         class EmptyLists(SampleLists):
             def get_items(self, **kwargs):

@@ -1,7 +1,14 @@
 import random
 from jurialmunkey.ftools import cached_property
 from tmdbhelper.lib.addon.plugin import convert_type
-from tmdbhelper.lib.addon.stablerandom import stable_random, stable_list_choice
+try:  # Our TMDb Helper fork owns the daily-stable picks; stock TMDb Helper lacks the module
+    from tmdbhelper.lib.addon.stablerandom import stable_random, stable_list_choice
+except ImportError:  # Fall back to upstream behaviour (a new random pick per load) instead of failing to load
+    def stable_random(paramstring, day=None):
+        return random
+
+    def stable_list_choice(paramstring, items, day=None):
+        return random.choice(items)
 from tmdbhelper_sync_trakt.directories.lists_filtered import (
     ListTraktTrending,
     ListTraktPopular,
